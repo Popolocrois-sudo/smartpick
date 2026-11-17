@@ -13,31 +13,31 @@ Aplikasi ini menggunakan pendekatan sistem pendukung keputusan untuk merangking 
    - Grafik interaktif menggunakan **Chart.js** untuk melihat sebaran kategori smartphone (Entry-Level, Mid-Range, Flagship).
 2. **Katalog & Manajemen Data Smartphone**:
    - Filter lengkap berdasarkan nama, brand, dan rentang harga.
-   - Fitur pencarian instan dan pengurutan (harga terendah, harga tertinggi, performa terbaik)[cite: 1].
-   - CRUD (Tambah, Edit, Hapus) data smartphone langsung melalui antarmuka[cite: 1].
+   - Fitur pencarian instan dan pengurutan (harga terendah, harga tertinggi, performa terbaik).
+   - CRUD (Tambah, Edit, Hapus) data smartphone langsung melalui antarmuka.
 3. **Pengaturan Kriteria & Bobot Penilaian**:
-   - Menyesuaikan tingkat kepentingan (bobot %) untuk berbagai aspek seperti Harga, RAM, Kamera, Baterai, Penyimpanan, dan Performa[cite: 1].
-   - Mendukung opsi kriteria *benefit* (semakin tinggi semakin baik) dan *cost* (semakin rendah semakin baik)[cite: 1].
+   - Menyesuaikan tingkat kepentingan (bobot %) untuk berbagai aspek seperti Harga, RAM, Kamera, Baterai, Penyimpanan, dan Performa.
+   - Mendukung opsi kriteria *benefit* (semakin tinggi semakin baik) dan *cost* (semakin rendah semakin baik).
 4. **Mesin Rekomendasi Pintar**:
-   - Filter berdasarkan *budget* minimal dan maksimal[cite: 1].
-   - Pilihan profil cepat (*Preset*): **Gaming**, **Fotografi**, **Produktivitas**, dan **Sehari-hari**[cite: 1].
-   - Menampilkan peringkat 3 teratas smartphone terbaik lengkap dengan skor kecocokan persentase[cite: 1].
+   - Filter berdasarkan *budget* minimal dan maksimal.
+   - Pilihan profil cepat (*Preset*): **Gaming**, **Fotografi**, **Produktivitas**, dan **Sehari-hari**.
+   - Menampilkan peringkat 3 teratas smartphone terbaik lengkap dengan skor kecocokan persentase.
 5. **Perbandingan & Hasil Perhitungan**:
-   - Tabel perbandingan berdampingan (*side-by-side*) untuk produk rekomendasi teratas[cite: 1].
-   - Rincian skor transparan di halaman Hasil Perhitungan[cite: 1].
-   - Fitur cetak/ekspor hasil rekomendasi secara langsung[cite: 1].
+   - Tabel perbandingan berdampingan (*side-by-side*) untuk produk rekomendasi teratas.
+   - Rincian skor transparan di halaman Hasil Perhitungan.
+   - Fitur cetak/ekspor hasil rekomendasi secara langsung.
 
 ---
 
 ## 🛠️ Teknologi yang Digunakan
 
 Proyek ini dibuat menggunakan pendekatan *frontend-only* yang ringan tanpa memerlukan instalasi *backend* yang rumit:
-- **HTML5 & CSS3**[cite: 1]
-- **Tailwind CSS** (via CDN untuk styling responsif modern)[cite: 1]
-- **JavaScript (ES6+)** (Logika aplikasi, manipulasi DOM, dan sistem perankingan)[cite: 1]
-- **Lucide Icons** (Ikon UI modern)[cite: 1]
-- **Chart.js** (Visualisasi data dan grafik statistik)[cite: 1]
-- **Google Fonts (Plus Jakarta Sans)** (Tipografi utama)[cite: 1]
+- **HTML5 & CSS3**
+- **Tailwind CSS** (via CDN untuk styling responsif modern)
+- **JavaScript (ES6+)** (Logika aplikasi, manipulasi DOM, dan sistem perankingan)
+- **Lucide Icons** (Ikon UI modern)
+- **Chart.js** (Visualisasi data dan grafik statistik)
+- **Google Fonts (Plus Jakarta Sans)** (Tipografi utama)
 
 ---
 
