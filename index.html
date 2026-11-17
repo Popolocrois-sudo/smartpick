@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartPick - Temukan Smartphone Terbaik</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="logo_smartpick.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--b:#2563eb}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#f3f6fb;color:#0f172a}
+.card{background:#fff;border-radius:1.1rem;border:1px solid #e8eef7;box-shadow:0 1px 3px rgba(15,23,42,.04),0 8px 24px rgba(30,64,175,.05);transition:.25s}
+.hv:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(30,64,175,.14)}
+aside{background:linear-gradient(180deg,#0b1b3b,#10295c)}
+.nav{display:flex;gap:.75rem;align-items:center;padding:.7rem 1rem;border-radius:.8rem;color:#a9b8d8;cursor:pointer;transition:.2s;font-weight:600;font-size:.9rem}
+.nav:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav.on{background:linear-gradient(90deg,#2563eb,#3b82f6);color:#fff;box-shadow:0 6px 16px rgba(37,99,235,.4)}
+.btn{padding:.6rem 1.1rem;border-radius:.7rem;font-weight:700;font-size:.85rem;transition:.2s;display:inline-flex;gap:.45rem;align-items:center;justify-content:center}
+.b1{background:linear-gradient(90deg,#2563eb,#3b82f6);color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.3)}.b1:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.b2{background:#eef4ff;color:#1d4ed8}.b2:hover{background:#dbe8ff}
+.b3{background:#fff1f2;color:#be123c}.b3:hover{background:#ffe0e4}
+.inp{width:100%;border:1px solid #d5deec;border-radius:.7rem;padding:.6rem .85rem;background:#fff;outline:none;transition:.2s;font-size:.9rem}
+.inp:focus{border-color:#2563eb;box-shadow:0 0 0 4px #dbeafe}
+input[type=range]{accent-color:#2563eb;width:100%}
+table{width:100%;font-size:.85rem;border-collapse:collapse}
+th{background:#f3f7ff;color:#334e8a;text-align:left;padding:.7rem .85rem;white-space:nowrap;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+td{padding:.7rem .85rem;border-bottom:1px solid #eef2f8;white-space:nowrap}
+tr:hover td{background:#f8fbff}
+.page{display:none}.page.on{display:block;animation:f .35s ease}
+@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.chip{font-size:.72rem;font-weight:600;background:#f1f5fb;color:#475569;padding:.25rem .55rem;border-radius:.5rem}
+.spin{width:38px;height:38px;border:4px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+details summary{cursor:pointer;font-weight:700;list-style:none}
+@media print{aside,header,.noprint{display:none!important}main{margin:0!important}.page{display:none!important}#p-rec{display:block!important}#recForm{display:none}}
+</style>
+</head>
+<body>
+<aside id="side" class="fixed inset-y-0 left-0 w-64 p-4 z-40 -translate-x-full lg:translate-x-0 transition-transform flex flex-col">
+  <div class="flex items-center gap-3 px-2 mb-8 mt-1"><div class="w-10 h-10 rounded-xl grid place-items-center text-white" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)"><i data-lucide="smartphone"></i></div><div><div class="font-extrabold text-white text-xl leading-none">SmartPick</div><div class="text-[11px] text-blue-300 mt-1">Temukan ponsel idealmu</div></div></div>
+  <div class="text-[11px] font-bold tracking-widest text-blue-300/60 px-3 mb-2">MENU</div>
+  <nav class="space-y-1 flex-1" id="nav"></nav>
+  <div class="rounded-2xl p-4 mt-4 text-white" style="background:rgba(255,255,255,.08)"><div class="text-sm font-bold">Butuh bantuan?</div><p class="text-xs text-blue-200 mt-1">Tim kami siap membantu Anda memilih.</p><button class="btn mt-3 w-full bg-white text-blue-700 !py-2" onclick="go('about')">Hubungi Kami</button></div>
+</aside>
+<div id="ov" class="fixed inset-0 bg-slate-900/40 z-30 hidden" onclick="tgl()"></div>
+<main class="lg:ml-64 min-h-screen">
+  <header class="sticky top-0 z-20 bg-white/85 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 sm:px-8 py-3.5">
+    <div class="flex items-center gap-3"><button class="lg:hidden p-2 rounded-lg bg-blue-50 text-blue-700" onclick="tgl()"><i data-lucide="menu"></i></button><div><h1 id="title" class="font-extrabold text-lg sm:text-xl"></h1><div id="sub" class="text-xs text-slate-400 hidden sm:block"></div></div></div>
+    <div class="flex items-center gap-3">
+      <div class="relative"><button class="p-2.5 rounded-xl hover:bg-slate-100 relative" onclick="el('notif').classList.toggle('hidden')"><i data-lucide="bell"></i><span class="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span></button>
+        <div id="notif" class="hidden absolute right-0 mt-2 w-72 card p-2 text-sm"><div class="px-3 py-2 font-bold">Notifikasi</div><div class="px-3 py-2 rounded-lg hover:bg-slate-50">🎉 Selamat datang di SmartPick!</div><div class="px-3 py-2 rounded-lg hover:bg-slate-50">📱 Katalog smartphone sudah diperbarui.</div><div class="px-3 py-2 rounded-lg hover:bg-slate-50">💡 Atur prioritas untuk hasil lebih akurat.</div></div></div>
+      <div class="flex items-center gap-3 pl-3 border-l border-slate-200"><div class="w-10 h-10 rounded-full grid place-items-center text-white font-bold" style="background:linear-gradient(135deg,#2563eb,#7c3aed)">RP</div><div class="hidden sm:block text-sm leading-tight"><div class="font-bold">Rizky Pratama</div><div class="text-xs text-slate-400">Member</div></div></div>
+    </div>
+  </header>
+  <div class="p-4 sm:p-8 max-w-7xl mx-auto">
+    <section id="p-dash" class="page"></section><section id="p-data" class="page"></section><section id="p-crit" class="page"></section>
+    <section id="p-rec" class="page"></section><section id="p-calc" class="page"></section><section id="p-about" class="page"></section>
+  </div>
+</main>
+<div id="modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="card w-full max-w-2xl max-h-[90vh] overflow-auto p-6" id="mbox"></div></div>
+<div id="toast" class="fixed top-4 right-4 z-[60] space-y-2"></div>
+
+<script>
+const el=id=>document.getElementById(id);
+const fmt=n=>'Rp '+Number(n).toLocaleString('id-ID');
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const K=['price','ram','cam','bat','sto','perf'];
+let phones=[
+{id:'SP01',name:'Samsung Galaxy A56',brand:'Samsung',price:6999000,ram:8,cam:50,bat:5000,sto:256,perf:72},
+{id:'SP02',name:'Xiaomi Redmi Note 14 Pro',brand:'Xiaomi',price:4999000,ram:8,cam:200,bat:5110,sto:256,perf:70},
+{id:'SP03',name:'POCO X7 Pro',brand:'POCO',price:5199000,ram:8,cam:50,bat:6000,sto:256,perf:85},
+{id:'SP04',name:'Infinix GT 30 Pro',brand:'Infinix',price:4599000,ram:8,cam:108,bat:5500,sto:256,perf:80},
+{id:'SP05',name:'iPhone 13',brand:'Apple',price:8999000,ram:4,cam:12,bat:3240,sto:128,perf:82},
+{id:'SP06',name:'realme 13 Pro+',brand:'realme',price:5999000,ram:8,cam:50,bat:5200,sto:256,perf:74},
+{id:'SP07',name:'Samsung Galaxy S24 FE',brand:'Samsung',price:9499000,ram:8,cam:50,bat:4700,sto:256,perf:90},
+{id:'SP08',name:'Redmi Note 14',brand:'Xiaomi',price:2999000,ram:6,cam:108,bat:5110,sto:128,perf:55}];
+let crit=[
+{c:'C1',n:'Harga',w:20,t:'cost',d:'Semakin murah semakin baik'},{c:'C2',n:'RAM',w:15,t:'benefit'},{c:'C3',n:'Kamera',w:15,t:'benefit'},
+{c:'C4',n:'Baterai',w:15,t:'benefit'},{c:'C5',n:'Penyimpanan',w:10,t:'benefit'},{c:'C6',n:'Performa',w:25,t:'benefit'}];
+const presets={gaming:[10,20,10,15,10,35],foto:[15,15,35,10,10,15],produk:[10,25,5,15,20,25],harian:[25,15,10,20,10,20]};
+const pname={gaming:'Gaming',foto:'Fotografi',produk:'Produktivitas',harian:'Sehari-hari'};
+const pico={gaming:'gamepad-2',foto:'camera',produk:'briefcase',harian:'sun'};
+const pdesc={gaming:'Performa & RAM tinggi',foto:'Kamera terbaik',produk:'Multitasking & storage',harian:'Hemat & awet'};
+const cols=['#2563eb','#06b6d4','#8b5cf6','#f59e0b','#10b981','#ef4444'];
+let recW=[...presets.harian],usage='harian',last=null,chart=null,dchart=null,nid=9,bmin=3000000,bmax=10000000;
+const T={dash:['Beranda','Ringkasan aktivitas dan rekomendasi untuk Anda'],data:['Data Smartphone','Kelola katalog smartphone'],crit:['Kriteria Penilaian','Atur seberapa penting setiap aspek bagi Anda'],rec:['Rekomendasi Smartphone','Dapatkan pilihan terbaik sesuai kebutuhan'],calc:['Hasil Perhitungan','Rincian skor setiap smartphone'],about:['Tentang Aplikasi','Kenali SmartPick lebih dekat']};
+const I={dash:'layout-dashboard',data:'smartphone',crit:'sliders-horizontal',rec:'sparkles',calc:'bar-chart-3',about:'info'};
+const N={dash:'Dashboard',data:'Data Smartphone',crit:'Kriteria Penilaian',rec:'Rekomendasi Smartphone',calc:'Hasil Perhitungan',about:'Tentang Aplikasi'};
+el('nav').innerHTML=Object.keys(T).map(k=>`<div class="nav" data-k="${k}" onclick="go('${k}')"><i data-lucide="${I[k]}" class="w-5 h-5"></i>${N[k]}</div>`).join('');
+
+function toast(m,ok=true){const d=document.createElement('div');d.className='card px-4 py-3 text-sm font-semibold flex gap-2 items-center border-l-4 '+(ok?'border-emerald-500':'border-rose-500');d.innerHTML=(ok?'✅':'⚠️')+' <span></span>';d.lastChild.textContent=m;el('toast').appendChild(d);setTimeout(()=>d.remove(),3200)}
+function tgl(){el('side').classList.toggle('-translate-x-full');el('ov').classList.toggle('hidden')}
+function openM(h){el('mbox').innerHTML=h;el('modal').classList.replace('hidden','flex');lucide.createIcons()}
+function closeM(){el('modal').classList.replace('flex','hidden')}
+el('modal').onclick=e=>{if(e.target.id==='modal')closeM()};
+const cat=p=>p.price<4e6?'Entry-Level':p.price<=7e6?'Mid-Range':'Flagship';
+function av(p,s='w-14 h-14'){const h=[...p.brand].reduce((a,c)=>a+c.charCodeAt(0),0)%cols.length;return `<div class="${s} rounded-2xl grid place-items-center text-white font-extrabold shrink-0" style="background:linear-gradient(135deg,${cols[h]},${cols[(h+2)%6]})">${p.brand.slice(0,2).toUpperCase()}</div>`}
+
+function go(p){
+  document.querySelectorAll('.page').forEach(s=>s.classList.remove('on'));el('p-'+p).classList.add('on');
+  document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.k===p));
+  el('title').textContent=T[p][0];el('sub').textContent=T[p][1];
+  if(innerWidth<1024&&!el('side').classList.contains('-translate-x-full'))tgl();
+  ({dash:rDash,data:rData,crit:rCrit,rec:rRec,calc:rCalc,about:rAbout})[p]();
+  lucide.createIcons();scrollTo(0,0);
+}
+
+/* ===== engine ===== */
+function score(a,b,w){
+  const alt=phones.filter(p=>p.price>=a&&p.price<=b);if(!alt.length)return{empty:true};
+  const X=alt.map(p=>K.map(k=>p[k]));
+  const mx=K.map((_,j)=>Math.max(...X.map(r=>r[j]))),mn=K.map((_,j)=>Math.min(...X.map(r=>r[j])));
+  const R=X.map(r=>r.map((x,j)=>crit[j].t==='cost'?mn[j]/x:x/mx[j]));
+  const WR=R.map(r=>r.map((x,j)=>x*w[j]/100)),V=WR.map(sum);
+  const rank=alt.map((p,i)=>({p,i,v:V[i]})).sort((x,y)=>y.v-x.v).map((o,r)=>({...o,rank:r+1}));
+  rank.forEach(o=>o.match=rank[0].v?o.v/rank[0].v*100:0);
+  return{alt,R,WR,rank,bmin:a,bmax:b,usage,w:[...w]};
+}
+
+/* ===== Dashboard ===== */
+function rDash(){
+  const cats={};phones.forEach(p=>cats[cat(p)]=(cats[cat(p)]||0)+1);
+  const pop=[...phones].sort((a,b)=>b.perf-a.perf).slice(0,5),ps=phones.map(p=>p.price);
+  const st=[['Smartphone Tersedia',phones.length,'smartphone','#2563eb'],['Aspek Penilaian',crit.length,'list-checks','#8b5cf6'],['Harga Terendah',fmt(Math.min(...ps)),'tag','#10b981'],['Rekomendasi Terakhir',last&&!last.empty?last.rank.length+' produk':'Belum ada','award','#f59e0b']];
+  el('p-dash').innerHTML=`
+  <div class="rounded-3xl p-7 sm:p-10 text-white mb-6 relative overflow-hidden" style="background:linear-gradient(120deg,#1e3a8a,#2563eb 60%,#06b6d4)"><div class="absolute -right-10 -top-10 w-64 h-64 rounded-full bg-white/10"></div><div class="absolute right-24 -bottom-16 w-48 h-48 rounded-full bg-white/10"></div>
+    <div class="relative"><h2 class="text-2xl sm:text-4xl font-extrabold">Selamat Datang di SmartPick!</h2><p class="opacity-90 mt-2 text-base sm:text-lg">Temukan smartphone terbaik sesuai kebutuhan dan budget Anda.</p>
+    <div class="flex flex-wrap gap-3 mt-6"><button class="btn bg-white text-blue-700 hover:bg-blue-50 !px-5 !py-3" onclick="go('rec')"><i data-lucide="sparkles" class="w-4 h-4"></i>Cari Rekomendasi</button><button class="btn bg-white/15 text-white hover:bg-white/25 !px-5 !py-3" onclick="go('data')">Jelajahi Katalog</button></div></div></div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">${st.map(s=>`<div class="card hv p-5"><div class="w-11 h-11 rounded-xl grid place-items-center text-white" style="background:${s[3]}"><i data-lucide="${s[2]}" class="w-5 h-5"></i></div><div class="text-xl sm:text-2xl font-extrabold mt-4">${s[1]}</div><div class="text-sm text-slate-500">${s[0]}</div></div>`).join('')}</div>
+  <div class="grid lg:grid-cols-3 gap-5">
+    <div class="card p-6"><h3 class="font-extrabold mb-4">Kategori Smartphone</h3><div style="height:190px"><canvas id="dc"></canvas></div></div>
+    <div class="card p-6 lg:col-span-2"><div class="flex justify-between items-center mb-3"><h3 class="font-extrabold">Smartphone Populer</h3><button class="text-sm font-bold text-blue-600" onclick="go('data')">Lihat semua →</button></div>
+      ${pop.map((p,i)=>`<div class="flex items-center gap-4 py-3 border-b border-slate-100 last:border-0 cursor-pointer" onclick="detail('${p.id}')"><span class="text-slate-300 font-extrabold w-5">${i+1}</span>${av(p,'w-11 h-11')}<div class="flex-1 min-w-0"><div class="font-bold truncate">${p.name}</div><div class="text-xs text-slate-400">${p.brand} • ${cat(p)}</div></div><div class="text-right"><div class="font-bold text-sm">${fmt(p.price)}</div><div class="text-xs text-amber-600 font-semibold">⚡ ${p.perf}/100</div></div></div>`).join('')}</div>
+  </div>
+  <div class="card p-6 mt-5"><h3 class="font-extrabold mb-4">Mulai dalam 3 langkah</h3><div class="grid sm:grid-cols-3 gap-4">${[['wallet','Tentukan budget','Masukkan rentang harga yang nyaman untuk Anda.'],['target','Pilih kebutuhan','Gaming, fotografi, produktivitas, atau harian.'],['trophy','Dapatkan pilihan terbaik','Lihat peringkat, perbandingan, dan skor kecocokan.']].map((s,i)=>`<div class="flex gap-4"><div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 grid place-items-center shrink-0"><i data-lucide="${s[0]}"></i></div><div><div class="font-bold">${i+1}. ${s[1]}</div><p class="text-sm text-slate-500">${s[2]}</p></div></div>`).join('')}</div></div>`;
+  if(dchart)dchart.destroy();
+  dchart=new Chart(el('dc'),{type:'doughnut',data:{labels:Object.keys(cats),datasets:[{data:Object.values(cats),backgroundColor:['#2563eb','#06b6d4','#8b5cf6'],borderWidth:0}]},options:{maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'right'}}}});
+}
+
+/* ===== Data ===== */
+let fq='',fb='',fp='',fs='name';
+function rData(){
+  const brands=[...new Set(phones.map(p=>p.brand))];
+  el('p-data').innerHTML=`<div class="card p-4 mb-5 grid sm:grid-cols-2 lg:grid-cols-6 gap-3 items-center">
+    <div class="relative lg:col-span-2"><i data-lucide="search" class="w-4 h-4 absolute left-3 top-3.5 text-slate-400"></i><input class="inp !pl-9" placeholder="Cari smartphone..." value="${fq}" oninput="fq=this.value;dGrid()"></div>
+    <select class="inp" onchange="fb=this.value;dGrid()"><option value="">Semua Brand</option>${brands.map(b=>`<option ${fb===b?'selected':''}>${b}</option>`).join('')}</select>
+    <select class="inp" onchange="fp=this.value;dGrid()">${[['','Semua Harga'],['a','< Rp 4 juta'],['b','Rp 4 – 7 juta'],['c','> Rp 7 juta']].map(o=>`<option value="${o[0]}" ${fp===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>
+    <select class="inp" onchange="fs=this.value;dGrid()">${[['name','Urutkan: Nama'],['pl','Harga Terendah'],['ph','Harga Tertinggi'],['perf','Performa Terbaik']].map(o=>`<option value="${o[0]}" ${fs===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>
+    <button class="btn b1" onclick="formM()"><i data-lucide="plus" class="w-4 h-4"></i>Tambah</button></div>
+    <div id="cnt" class="text-sm text-slate-500 mb-3"></div><div id="dg" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5"></div>`;
+  dGrid();
+}
+function dGrid(){
+  let L=phones.filter(p=>(p.name+p.brand).toLowerCase().includes(fq.toLowerCase())&&(!fb||p.brand===fb)&&(!fp||(fp==='a'?p.price<4e6:fp==='b'?p.price>=4e6&&p.price<=7e6:p.price>7e6)));
+  L.sort((a,b)=>fs==='pl'?a.price-b.price:fs==='ph'?b.price-a.price:fs==='perf'?b.perf-a.perf:a.name.localeCompare(b.name));
+  el('cnt').textContent=`Menampilkan ${L.length} dari ${phones.length} smartphone`;
+  el('dg').innerHTML=L.length?L.map(p=>`<div class="card hv p-5"><div class="flex gap-4">${av(p)}<div class="min-w-0"><div class="font-extrabold leading-tight">${p.name}</div><div class="text-xs text-slate-400 mt-1">${p.id} • ${p.brand} • ${cat(p)}</div></div></div>
+   <div class="text-xl font-extrabold text-blue-700 mt-4">${fmt(p.price)}</div>
+   <div class="flex flex-wrap gap-1.5 mt-3"><span class="chip">${p.ram} GB RAM</span><span class="chip">${p.cam} MP</span><span class="chip">${p.bat} mAh</span><span class="chip">${p.sto} GB</span><span class="chip">⚡ ${p.perf}</span></div>
+   <div class="flex gap-2 mt-4"><button class="btn b2 flex-1" onclick="detail('${p.id}')">Detail</button><button class="btn b2 !px-3" onclick="formM('${p.id}')"><i data-lucide="pencil" class="w-4 h-4"></i></button><button class="btn b3 !px-3" onclick="del('${p.id}')"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join(''):`<div class="card p-12 text-center col-span-full"><div class="text-5xl mb-3">🔍</div><div class="font-extrabold text-lg">Smartphone tidak ditemukan</div><p class="text-slate-500 text-sm">Coba ubah kata kunci atau filter pencarian.</p></div>`;
+  lucide.createIcons();
+}
+function detail(id){const p=phones.find(x=>x.id===id);
+  openM(`<div class="flex justify-between items-start"><div class="flex gap-4">${av(p,'w-16 h-16')}<div><span class="chip">${p.brand} • ${cat(p)}</span><h3 class="text-xl font-extrabold mt-1">${p.name}</h3><div class="text-blue-700 font-extrabold text-lg">${fmt(p.price)}</div></div></div><button onclick="closeM()" class="p-1"><i data-lucide="x"></i></button></div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-5">${[['RAM',p.ram+' GB','cpu'],['Kamera',p.cam+' MP','camera'],['Baterai',p.bat+' mAh','battery-full'],['Penyimpanan',p.sto+' GB','hard-drive'],['Performa',p.perf+' / 100','zap'],['Kategori',cat(p),'layers']].map(a=>`<div class="bg-slate-50 rounded-2xl p-4"><i data-lucide="${a[2]}" class="w-5 h-5 text-blue-600"></i><div class="text-xs text-slate-500 mt-2">${a[0]}</div><div class="font-extrabold">${a[1]}</div></div>`).join('')}</div>`)}
+function formM(id){const p=id?phones.find(x=>x.id===id):{name:'',brand:'',price:'',ram:'',cam:'',bat:'',sto:'',perf:''};
+  const F=[['name','Nama Smartphone','text'],['brand','Brand','text'],['price','Harga (Rp)','number'],['ram','RAM (GB)','number'],['cam','Kamera (MP)','number'],['bat','Baterai (mAh)','number'],['sto','Penyimpanan (GB)','number'],['perf','Skor Performa (1–100)','number']];
+  openM(`<h3 class="text-xl font-extrabold mb-4">${id?'Edit':'Tambah'} Smartphone</h3><div class="grid sm:grid-cols-2 gap-4">${F.map(f=>`<label class="text-sm font-semibold">${f[1]}<input id="f_${f[0]}" type="${f[2]}" class="inp mt-1" value="${p[f[0]]}"></label>`).join('')}</div><div class="flex justify-end gap-2 mt-6"><button class="btn b2" onclick="closeM()">Batal</button><button class="btn b1" onclick="save('${id||''}')">Simpan</button></div>`)}
+function save(id){const o={};
+  for(const k of ['name','brand','price','ram','cam','bat','sto','perf']){const v=el('f_'+k).value.trim();if(!v)return toast('Semua kolom wajib diisi',false);const s=['name','brand'].includes(k);o[k]=s?v:Number(v);if(!s&&!(o[k]>0))return toast('Nilai angka harus lebih dari 0',false)}
+  if(o.perf>100)return toast('Skor performa maksimal 100',false);
+  if(id){Object.assign(phones.find(x=>x.id===id),o);toast('Data berhasil diperbarui')}else{phones.push({id:'SP'+String(nid++).padStart(2,'0'),...o});toast('Smartphone berhasil ditambahkan')}
+  closeM();rData()}
+function del(id){if(phones.length<=2)return toast('Minimal 2 smartphone harus tersedia',false);if(confirm('Hapus smartphone ini dari katalog?')){phones=phones.filter(p=>p.id!==id);toast('Smartphone dihapus');dGrid()}}
+
+/* ===== Kriteria ===== */
+function slider(i,arr,fn){return `<div class="flex items-center gap-3"><input type="range" min="0" max="100" step="5" value="${arr[i]}" oninput="${fn}(${i},+this.value);this.nextElementSibling.textContent=this.value+'%'"><span class="w-12 text-right font-extrabold text-blue-700">${arr[i]}%</span></div>`}
+function setC(i,v){crit[i].w=v;cTot()}
+function rCrit(){
+  el('p-crit').innerHTML=`<div class="grid lg:grid-cols-3 gap-5"><div class="card p-6 lg:col-span-2"><h3 class="font-extrabold mb-1">Bobot Kepentingan</h3><p class="text-sm text-slate-500 mb-5">Geser untuk menentukan seberapa penting tiap aspek. Total harus 100%.</p>
+   <div class="space-y-5">${crit.map((c,i)=>`<div><div class="flex justify-between items-center mb-1 flex-wrap gap-2"><div class="font-bold"><span class="chip mr-2">${c.c}</span>${c.n}</div>
+     <select class="inp !w-auto !py-1.5 !text-xs font-semibold" onchange="crit[${i}].t=this.value"><option value="benefit" ${c.t==='benefit'?'selected':''}>Semakin tinggi semakin baik</option><option value="cost" ${c.t==='cost'?'selected':''}>Semakin rendah semakin baik</option></select></div>${slider(i,crit.map(x=>x.w),'setC')}</div>`).join('')}</div></div>
+   <div class="space-y-5"><div class="card p-6"><div class="text-sm text-slate-500">Total Bobot</div><div id="ctot" class="text-4xl font-extrabold mt-1"></div><div class="h-2.5 bg-slate-100 rounded-full mt-3"><div id="cbar" class="h-2.5 rounded-full transition-all"></div></div><p id="cmsg" class="text-xs mt-2"></p>
+    <div class="flex gap-2 mt-5"><button class="btn b2 flex-1" onclick="crit.forEach((c,i)=>{c.w=[20,15,15,15,10,25][i];c.t=i?'benefit':'cost'});rCrit();lucide.createIcons();toast('Pengaturan dikembalikan')">Reset</button><button class="btn b1 flex-1" onclick="cSave()"><i data-lucide="save" class="w-4 h-4"></i>Simpan</button></div></div>
+    <div class="card p-6 text-sm text-slate-600"><div class="font-extrabold text-slate-900 mb-2">💡 Tips</div><p><b>Semakin tinggi semakin baik</b> cocok untuk RAM, kamera, baterai, penyimpanan, dan performa.</p><p class="mt-2"><b>Semakin rendah semakin baik</b> cocok untuk harga.</p></div></div></div>`;
+  cTot();
+}
+function cTot(){const t=sum(crit.map(c=>c.w)),ok=t===100;el('ctot').innerHTML=`<span class="${ok?'text-emerald-600':'text-rose-600'}">${t}%</span>`;el('cbar').style.cssText=`width:${Math.min(t,100)}%;background:${ok?'#10b981':t>100?'#ef4444':'#f59e0b'}`;el('cmsg').textContent=ok?'Siap digunakan ✓':t>100?`Kelebihan ${t-100}%`:`Kurang ${100-t}%`}
+function cSave(){if(sum(crit.map(c=>c.w))!==100)return toast('Total bobot harus tepat 100%',false);recW=crit.map(c=>c.w);usage='';toast('Pengaturan berhasil disimpan');if(last&&!last.empty)run(true)}
+
+/* ===== Rekomendasi ===== */
+function setR(i,v){recW[i]=v;usage='';rTot()}
+function rRec(){
+  el('p-rec').innerHTML=`<div id="recForm" class="card p-6 mb-6 noprint"><div class="grid lg:grid-cols-2 gap-8">
+   <div><h3 class="font-extrabold mb-4">1. Budget Anda</h3><div class="grid grid-cols-2 gap-3"><label class="text-sm font-semibold">Minimum (Rp)<input id="bmin" type="number" class="inp mt-1" value="${bmin}"></label><label class="text-sm font-semibold">Maksimum (Rp)<input id="bmax" type="number" class="inp mt-1" value="${bmax}"></label></div>
+    <div class="flex flex-wrap gap-2 mt-3">${[['< 4 jt',0,4e6],['4–7 jt',4e6,7e6],['> 7 jt',7e6,2e7],['Semua',0,2e7]].map(c=>`<button class="chip hover:bg-blue-100" onclick="el('bmin').value=${c[1]};el('bmax').value=${c[2]}">${c[0]}</button>`).join('')}</div>
+    <h3 class="font-extrabold mt-7 mb-3">2. Untuk Apa Ponsel Ini?</h3><div class="grid grid-cols-2 gap-3">${Object.keys(presets).map(k=>`<button onclick="setUse('${k}')" class="text-left p-4 rounded-2xl border-2 transition ${usage===k?'border-blue-600 bg-blue-50':'border-slate-100 hover:border-blue-200'}"><i data-lucide="${pico[k]}" class="w-5 h-5 text-blue-600"></i><div class="font-bold mt-2">${pname[k]}</div><div class="text-xs text-slate-500">${pdesc[k]}</div></button>`).join('')}</div></div>
+   <div><h3 class="font-extrabold mb-4">3. Prioritas Aspek</h3><div class="space-y-3">${crit.map((c,i)=>`<div><div class="text-sm font-semibold mb-0.5">${c.n}</div>${slider(i,recW,'setR')}</div>`).join('')}</div>
+    <div class="flex items-center justify-between mt-4 p-3 rounded-xl bg-slate-50"><div class="text-sm font-bold">Total: <span id="rtot"></span></div><span id="rmsg" class="text-xs"></span></div></div></div>
+   <div class="flex justify-end mt-6"><button class="btn b1 !px-8 !py-3" onclick="run()"><i data-lucide="sparkles" class="w-4 h-4"></i>Cari Rekomendasi</button></div></div><div id="res"></div>`;
+  rTot();if(last)showRes();
+}
+function rTot(){const t=sum(recW),ok=t===100;el('rtot').innerHTML=`<span class="${ok?'text-emerald-600':'text-rose-600'}">${t}%</span>`;el('rmsg').textContent=ok?'Siap ✓':'Harus 100%'}
+function setUse(k){bmin=Number(el('bmin').value)||0;bmax=Number(el('bmax').value)||0;usage=k;recW=[...presets[k]];rRec();lucide.createIcons();toast('Prioritas '+pname[k]+' diterapkan')}
+function run(silent){
+  const a=el('bmin')?Number(el('bmin').value):bmin,b=el('bmax')?Number(el('bmax').value):bmax;
+  if(a>b)return toast('Budget minimum tidak boleh melebihi maksimum',false);
+  if(sum(recW)!==100)return toast('Total prioritas harus tepat 100%',false);
+  bmin=a;bmax=b;
+  if(!el('p-rec').classList.contains('on')&&!silent)go('rec');
+  const box=el('res');
+  if(silent){last=score(a,b,recW);return el('p-rec').classList.contains('on')&&showRes()}
+  box.innerHTML=`<div class="card p-14 flex flex-col items-center gap-4"><div class="spin"></div><div class="font-bold text-slate-600">Menganalisis smartphone terbaik untuk Anda...</div></div>`;
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>{last=score(a,b,recW);showRes();last.empty?toast('Tidak ada smartphone sesuai budget',false):toast('Rekomendasi berhasil dibuat!')},900);
+}
+function showRes(){
+  const r=last,box=el('res');
+  if(r.empty){box.innerHTML=`<div class="card p-14 text-center"><div class="text-6xl mb-3">📭</div><h3 class="font-extrabold text-xl">Belum Ada Smartphone yang Cocok</h3><p class="text-slate-500 mt-1">Tidak ada produk dalam rentang ${fmt(r.bmin)} – ${fmt(r.bmax)}. Coba perluas budget Anda.</p></div>`;return}
+  const top=r.rank.slice(0,3),md=['🥇','🥈','🥉'],sc=o=>(o.v*100).toFixed(1);
+  box.innerHTML=`<div class="flex flex-wrap justify-between items-center gap-3 mb-4"><div><h2 class="text-xl font-extrabold">Hasil Rekomendasi</h2><div class="text-sm text-slate-500">${r.alt.length} produk • ${fmt(r.bmin)} – ${fmt(r.bmax)}${r.usage?' • '+pname[r.usage]:''}</div></div>
+   <div class="flex flex-wrap gap-2 noprint"><button class="btn b1" onclick="detail('${top[0].p.id}')"><i data-lucide="eye" class="w-4 h-4"></i>Lihat Detail</button><button class="btn b2" onclick="cmp()"><i data-lucide="columns" class="w-4 h-4"></i>Bandingkan Smartphone</button><button class="btn b2" onclick="run()"><i data-lucide="refresh-cw" class="w-4 h-4"></i>Hitung Ulang</button><button class="btn b2" onclick="print()"><i data-lucide="printer" class="w-4 h-4"></i>Cetak Hasil</button></div></div>
+   <div class="grid md:grid-cols-3 gap-5 mb-6 pt-3">${top.map((o,i)=>`<div class="card hv p-6 relative ${i===0?'ring-2 ring-blue-600':''}">${i===0?'<span class="absolute -top-3 left-5 text-white text-xs font-extrabold px-3 py-1.5 rounded-full" style="background:linear-gradient(90deg,#2563eb,#06b6d4)">⭐ Rekomendasi Terbaik</span>':''}
+    <div class="flex items-center gap-3"><span class="text-3xl">${md[i]}</span>${av(o.p,'w-12 h-12')}</div><div class="font-extrabold mt-3 leading-tight">${o.p.name}</div><div class="text-sm text-slate-500">${fmt(o.p.price)}</div>
+    <div class="flex items-end justify-between mt-4"><div><div class="text-xs text-slate-500">Skor</div><div class="text-3xl font-extrabold text-blue-700">${sc(o)}</div></div><div class="text-right text-xs"><div class="text-slate-500">Kecocokan</div><div class="font-extrabold text-lg">${o.match.toFixed(0)}%</div></div></div>
+    <div class="h-2 bg-slate-100 rounded-full mt-2"><div class="h-2 rounded-full" style="width:${o.match}%;background:linear-gradient(90deg,#2563eb,#06b6d4)"></div></div>
+    <div class="flex flex-wrap gap-1.5 mt-4"><span class="chip">${o.p.ram} GB RAM</span><span class="chip">${o.p.cam} MP</span><span class="chip">${o.p.bat} mAh</span><span class="chip">${o.p.sto} GB</span><span class="chip">⚡ ${o.p.perf}</span></div>
+    <button class="btn b2 w-full mt-4 noprint" onclick="detail('${o.p.id}')">Lihat Detail</button></div>`).join('')}</div>
+   <div class="grid lg:grid-cols-5 gap-5"><div class="card p-6 lg:col-span-2"><h3 class="font-extrabold mb-3">Perbandingan Skor</h3><div style="height:320px"><canvas id="ch"></canvas></div></div>
+   <div class="card p-6 lg:col-span-3 overflow-x-auto"><h3 class="font-extrabold mb-3">Perbandingan Lengkap</h3><table><thead><tr><th>#</th><th>Smartphone</th><th>Skor</th><th>Harga</th><th>RAM</th><th>Kamera</th><th>Baterai</th><th>Storage</th><th>Perf</th></tr></thead><tbody>${r.rank.map(o=>`<tr><td><b>${o.rank}</b></td><td class="font-semibold">${o.p.name}${o.rank===1?' <span class="chip !bg-blue-100 !text-blue-700">Terbaik</span>':''}</td><td class="font-bold text-blue-700">${sc(o)}</td><td>${fmt(o.p.price)}</td><td>${o.p.ram} GB</td><td>${o.p.cam} MP</td><td>${o.p.bat}</td><td>${o.p.sto} GB</td><td>${o.p.perf}</td></tr>`).join('')}</tbody></table></div></div>`;
+  if(chart)chart.destroy();
+  chart=new Chart(el('ch'),{type:'bar',data:{labels:r.rank.map(o=>o.p.name),datasets:[{label:'Skor',data:r.rank.map(o=>+sc(o)),backgroundColor:r.rank.map((_,i)=>i?'#bfdbfe':'#2563eb'),borderRadius:8}]},options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  lucide.createIcons();
+}
+function cmp(){const t=last.rank.slice(0,3),rows=[['Harga',p=>fmt(p.price)],['RAM',p=>p.ram+' GB'],['Kamera',p=>p.cam+' MP'],['Baterai',p=>p.bat+' mAh'],['Penyimpanan',p=>p.sto+' GB'],['Performa',p=>p.perf+'/100']];
+  openM(`<div class="flex justify-between mb-4"><h3 class="text-xl font-extrabold">Bandingkan ${t.length} Teratas</h3><button onclick="closeM()"><i data-lucide="x"></i></button></div><div class="overflow-x-auto"><table><thead><tr><th></th>${t.map(o=>`<th>${o.p.name}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr><td class="font-bold">${r[0]}</td>${t.map(o=>`<td>${r[1](o.p)}</td>`).join('')}</tr>`).join('')}<tr><td class="font-bold">Skor</td>${t.map(o=>`<td class="font-extrabold text-blue-700">${(o.v*100).toFixed(1)}</td>`).join('')}</tr></tbody></table></div>`)}
+
+/* ===== Hasil Perhitungan (rincian skor) ===== */
+function rCalc(){
+  const r=last,b=el('p-calc');
+  if(!r||r.empty){b.innerHTML=`<div class="card p-14 text-center"><div class="text-6xl mb-3">📊</div><h3 class="font-extrabold text-xl">Belum Ada Hasil</h3><p class="text-slate-500 mb-5">Buat rekomendasi terlebih dahulu untuk melihat rincian skor.</p><button class="btn b1" onclick="go('rec')">Buat Rekomendasi</button></div>`;return}
+  b.innerHTML=`<div class="card p-6 mb-5"><h3 class="font-extrabold mb-1">Rincian Skor per Smartphone</h3><div class="flex flex-wrap gap-3 my-3">${crit.map((c,i)=>`<span class="text-xs font-semibold flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full inline-block" style="background:${cols[i]}"></i>${c.n} (${r.w[i]}%)</span>`).join('')}</div>
+   <div class="space-y-4">${r.rank.map(o=>`<div class="flex items-center gap-4"><div class="w-6 text-slate-400 font-extrabold">${o.rank}</div><div class="w-40 sm:w-56 text-sm font-bold truncate">${o.p.name}</div><div class="flex-1 h-5 bg-slate-100 rounded-full overflow-hidden flex">${r.WR[o.i].map((x,j)=>`<div title="${crit[j].n}: ${(x*100).toFixed(1)}" style="width:${x*100}%;background:${cols[j]}"></div>`).join('')}</div><div class="w-14 text-right font-extrabold text-blue-700">${(o.v*100).toFixed(1)}</div></div>`).join('')}</div></div>
+   <div class="card p-6 overflow-x-auto"><h3 class="font-extrabold mb-3">Skor Tiap Aspek (0–100)</h3><table><thead><tr><th>Rank</th><th>Smartphone</th>${crit.map(c=>`<th>${c.n}</th>`).join('')}<th>Skor Akhir</th><th>Kecocokan</th></tr></thead><tbody>${r.rank.map(o=>`<tr><td><b>${o.rank}</b></td><td class="font-semibold">${o.p.name}</td>${r.R[o.i].map(x=>`<td>${(x*100).toFixed(0)}</td>`).join('')}<td class="font-extrabold text-blue-700">${(o.v*100).toFixed(1)}</td><td>${o.match.toFixed(1)}%</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+/* ===== Tentang ===== */
+function rAbout(){
+  const F=[['target','Rekomendasi Personal','Hasil disesuaikan dengan budget, kebutuhan, dan prioritas Anda.'],['smartphone','Katalog Lengkap','Spesifikasi smartphone populer dari berbagai brand dalam satu tempat.'],['columns','Bandingkan Mudah','Lihat perbedaan RAM, kamera, baterai, dan performa secara berdampingan.'],['printer','Cetak Hasil','Simpan atau cetak hasil rekomendasi untuk dibawa saat membeli.']];
+  const Q=[['Apakah SmartPick gratis?','Ya, SmartPick dapat digunakan tanpa biaya untuk mencari dan membandingkan smartphone.'],['Bagaimana rekomendasi dibuat?','SmartPick menilai setiap smartphone berdasarkan budget, kebutuhan, dan tingkat kepentingan aspek yang Anda pilih, lalu menampilkan yang paling sesuai.'],['Bisakah saya mengubah prioritas?','Tentu. Atur ulang prioritas kapan saja di menu Kriteria Penilaian atau langsung di halaman Rekomendasi.'],['Apakah harga yang ditampilkan pasti?','Harga bersifat perkiraan dan dapat berbeda di tiap toko. Selalu periksa harga terbaru sebelum membeli.']];
+  el('p-about').innerHTML=`<div class="rounded-3xl p-8 sm:p-12 text-center text-white mb-6" style="background:linear-gradient(120deg,#1e3a8a,#2563eb 60%,#06b6d4)"><div class="w-16 h-16 rounded-2xl bg-white/20 grid place-items-center mx-auto"><i data-lucide="smartphone" class="w-8 h-8"></i></div><h2 class="text-3xl sm:text-4xl font-extrabold mt-4">SmartPick</h2><p class="text-lg opacity-90 mt-2 max-w-xl mx-auto">Asisten cerdas yang membantu Anda memilih smartphone yang tepat — tanpa bingung, tanpa ribet.</p><span class="inline-block mt-4 text-xs font-bold bg-white/20 px-3 py-1 rounded-full">Versi 1.0.0</span></div>
+  <div class="card p-6 mb-5"><h3 class="font-extrabold text-lg mb-2">Misi Kami</h3><p class="text-slate-600">Memilih smartphone seharusnya menyenangkan. Dengan begitu banyak pilihan dan spesifikasi, kami hadir untuk menyederhanakannya: Anda cukup menceritakan budget dan kebutuhan, SmartPick menemukan pilihan terbaik.</p></div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">${F.map(f=>`<div class="card hv p-5"><div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 grid place-items-center"><i data-lucide="${f[0]}"></i></div><div class="font-extrabold mt-3">${f[1]}</div><p class="text-sm text-slate-500 mt-1">${f[2]}</p></div>`).join('')}</div>
+  <div class="grid lg:grid-cols-5 gap-5"><div class="card p-6 lg:col-span-3"><h3 class="font-extrabold text-lg mb-3">Pertanyaan Umum</h3><div class="divide-y divide-slate-100">${Q.map(q=>`<details class="py-3"><summary class="flex justify-between items-center">${q[0]}<i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i></summary><p class="text-sm text-slate-600 mt-2">${q[1]}</p></details>`).join('')}</div></div>
+  <div class="card p-6 lg:col-span-2"><h3 class="font-extrabold text-lg mb-3">Hubungi Kami</h3><div class="space-y-3 text-sm"><div class="flex gap-3 items-center"><i data-lucide="mail" class="w-5 h-5 text-blue-600"></i>halo@smartpick.id</div><div class="flex gap-3 items-center"><i data-lucide="phone" class="w-5 h-5 text-blue-600"></i>+62 21 5000 1234</div><div class="flex gap-3 items-center"><i data-lucide="map-pin" class="w-5 h-5 text-blue-600"></i>Jakarta, Indonesia</div><div class="flex gap-3 items-center"><i data-lucide="clock" class="w-5 h-5 text-blue-600"></i>Senin – Jumat, 09.00 – 17.00 WIB</div></div><button class="btn b1 w-full mt-5" onclick="toast('Terima kasih! Pesan Anda telah kami terima.')"><i data-lucide="send" class="w-4 h-4"></i>Kirim Masukan</button></div></div>
+  <div class="text-center text-xs text-slate-400 mt-8">© 2026 SmartPick. Seluruh hak cipta dilindungi.</div>`;
+}
+lucide.createIcons();go('dash');
+</script>
+</body>
+</html>
